@@ -23,15 +23,15 @@ const nextConfig: NextConfig = {
 		formats: ["image/avif", "image/webp"],
 	},
 	transpilePackages: ["next-mdx-remote", "commerce-kit"],
-	experimental: {
-		esmExternals: true,
-		scrollRestoration: true,
-		ppr: true,
-		cpus: 1,
-		reactCompiler: true,
-		mdxRs: true,
-		inlineCss: true,
-	},
+	// experimental: {
+	// 	esmExternals: true,
+	// 	scrollRestoration: true,
+	// 	ppr: true,
+	// 	cpus: 1,
+	// 	reactCompiler: true,
+	// 	mdxRs: true,
+	// 	inlineCss: true,
+	// },
 	webpack: (config) => {
 		return {
 			...config,
