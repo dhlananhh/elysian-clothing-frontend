@@ -12,7 +12,7 @@ const sidebarItems = {
 		{ href: "#", icon: Users, label: "Customers" },
 		{ href: "#", icon: BarChart, label: "Reports" },
 	],
-	"Chart Examples": [
+	"Statistical Report": [
 		{ href: "#", icon: BarChart, label: "Bar Chart" },
 		{ href: "#", icon: LineChart, label: "Line Chart" },
 		{ href: "#", icon: PieChart, label: "Pie Chart" },
