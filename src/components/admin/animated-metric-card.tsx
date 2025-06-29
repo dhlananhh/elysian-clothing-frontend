@@ -1,88 +1,71 @@
 "use client";
 
-import { Minus, TrendingDown, TrendingUp } from "lucide-react";
-import { useEffect, useState } from "react";
+import { LucideIcon } from "lucide-react";
+import CountUp from "react-countup";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/admin/ui/card";
-import { animateValue } from "@/lib/realtime-simulator";
+import { cn } from "@/lib/utils";
 
 interface AnimatedMetricCardProps {
 	title: string;
 	value: number;
 	previousValue?: number;
+	icon: LucideIcon;
 	format?: (value: number) => string;
-	icon: React.ComponentType<{ className?: string }>;
-	suffix?: string;
-	prefix?: string;
-	showTrend?: boolean;
 	animate?: boolean;
+	showTrend?: boolean;
 }
 
 export function AnimatedMetricCard({
 	title,
 	value,
-	previousValue,
-	format,
+	previousValue = 0,
 	icon: Icon,
-	suffix = "",
-	prefix = "",
-	showTrend = false,
+	format,
 	animate = true,
+	showTrend = false,
 }: AnimatedMetricCardProps) {
-	const [displayValue, setDisplayValue] = useState(animate ? (previousValue ?? 0) : value);
-	const [isAnimating, setIsAnimating] = useState(false);
+	const percentageChange = previousValue === 0 ? 0 : ((value - previousValue) / previousValue) * 100;
 
-	useEffect(() => {
-		if (!animate) {
-			setDisplayValue(value);
-			return;
-		}
-
-		setIsAnimating(true);
-		animateValue(
-			displayValue,
-			value,
-			1000,
-			(val) => setDisplayValue(val),
-			() => setIsAnimating(false),
-		);
-	}, [value, animate, displayValue]);
-
-	const formatValue = format || ((v) => Math.round(v).toLocaleString());
-	const change = previousValue ? ((value - previousValue) / previousValue) * 100 : 0;
-
-	const getTrendIcon = () => {
-		if (change > 1) return TrendingUp;
-		if (change < -1) return TrendingDown;
-		return Minus;
-	};
-
-	const getTrendColor = () => {
-		if (change > 1) return "text-green-500";
-		if (change < -1) return "text-red-500";
-		return "text-gray-500";
-	};
-
-	const TrendIcon = getTrendIcon();
+	const formattedValue = format ? format(value) : value.toString();
 
 	return (
-		<Card className={`card-hover ${isAnimating ? "animate-pulse" : ""}`}>
+		<Card
+			className={cn(
+				"h-full",
+				"transition-all duration-300 ease-in-out",
+				"hover:scale-[1.02]",
+				"hover:shadow-xl",
+				"dark:hover:shadow-blue-500/20",
+			)}
+		>
 			<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
 				<CardTitle className="text-sm font-medium">{title}</CardTitle>
-				<div className="p-2 rounded-lg bg-primary/10">
-					<Icon className="h-4 w-4 text-primary" />
-				</div>
+				<Icon className="h-5 w-5 text-muted-foreground" />
 			</CardHeader>
 			<CardContent>
 				<div className="text-2xl font-bold">
-					{prefix}
-					{formatValue(displayValue)}
-					{suffix}
+					{animate ? (
+						<CountUp
+							start={0}
+							end={value}
+							duration={2}
+							separator=","
+							formattingFn={format ? (val) => format(val) : undefined}
+						/>
+					) : (
+						formattedValue
+					)}
 				</div>
-				{showTrend && previousValue !== undefined && (
-					<div className={`flex items-center text-xs ${getTrendColor()}`}>
-						<TrendIcon className="mr-1 h-3 w-3" />
-						{Math.abs(change).toFixed(1)}% {change >= 0 ? "increase" : "decrease"}
-					</div>
+				{showTrend && (
+					<p
+						className={cn(
+							"text-xs text-muted-foreground mt-1",
+							percentageChange > 0 && "text-green-600",
+							percentageChange < 0 && "text-red-600",
+						)}
+					>
+						{percentageChange.toFixed(1)}% {percentageChange > 0 ? "increase" : "decrease"}
+					</p>
 				)}
 			</CardContent>
 		</Card>
